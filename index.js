@@ -22,15 +22,26 @@ const run = async () => {
   try {
     await client.connect();
     const productDB = client.db("product_db");
+    const userDB = client.db("user_db");
     const productCollection = productDB.collection("product_collection");
+    const userCollection = userDB.collection("user_collection");
 
-    //  handle product routes and requests
+    /* ===========================================
+    ============ Handle User Request==============
+    ==============================================*/
 
     // handle product post request
     app.post("/products", async (req, res) => {
       console.log("user hit the api post");
       const proudct = req.body;
       const result = await productCollection.insertOne(proudct);
+      res.send(result);
+    });
+
+    // handle products get request for sing product
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await productCollection.findOne({ _id: new ObjectId(id) });
       res.send(result);
     });
 
@@ -42,14 +53,9 @@ const run = async () => {
     });
 
     // handle products get request for sing product
-    app.get("/products/:id", async (req, res) => {
+    app.delete("/products/delete/:id", async (req, res) => {
       const id = req.params.id;
-      const result = await productCollection.findOne({ _id: new ObjectId(id) });
-      res.send(result);
-    });
-    // handle products get request for sing product
-    app.delete("/products/delete:id", async (req, res) => {
-      const id = req.params.id;
+      console.log(id);
       const result = await productCollection.deleteOne({
         _id: new ObjectId(id),
       });
@@ -68,6 +74,17 @@ const run = async () => {
           $set: updatedProduct,
         }
       );
+      res.send(result);
+    });
+
+    /* ===========================================
+    ============ Handle User Request==============
+    ==============================================*/
+
+    // post a user to user collection
+    app.post("/users", async (req, res) => {
+      const userInfo = req.body;
+      const result = await userCollection.insertOne(userInfo);
       res.send(result);
     });
   } finally {
