@@ -47,6 +47,29 @@ const run = async () => {
       const result = await productCollection.findOne({ _id: new ObjectId(id) });
       res.send(result);
     });
+    // handle products get request for sing product
+    app.delete("/products/delete:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await productCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+
+    // handle products patch request for sing product
+    app.patch("/products/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedProduct = req.body;
+      const result = await productCollection.updateOne(
+        {
+          _id: new ObjectId(id),
+        },
+        {
+          $set: updatedProduct,
+        }
+      );
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
